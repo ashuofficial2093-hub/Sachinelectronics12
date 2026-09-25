@@ -1,0 +1,6 @@
+{
+  "name": "Sachin Electricals & Repairs",
+  "description": "Electrical Sales & Repairing Shop website offering expert appliance repairs, product shop, order tracking, and technician dispatch.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,63 @@
+{
+  "entities": {
+    "Product": {
+      "title": "Product",
+      "description": "Products available in the shop",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "category": { "type": "string" },
+        "price": { "type": "number" },
+        "image": { "type": "string" },
+        "description": { "type": "string" }
+      }
+    },
+    "Complaint": {
+      "title": "Complaint",
+      "description": "Customer complaints submitted from the website",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "phone": { "type": "string" },
+        "address": { "type": "string" },
+        "product": { "type": "string" },
+        "issue": { "type": "string" },
+        "status": { "type": "string", "enum": ["Pending", "Resolved"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "resolutionDetails": {
+          "type": "object",
+          "properties": {
+            "replacedPartName": { "type": "string" },
+            "oldPartPhoto": { "type": "string" },
+            "newPartPhoto": { "type": "string" },
+            "totalCost": { "type": "number" }
+          }
+        }
+      }
+    },
+    "Feedback": {
+      "title": "Feedback",
+      "description": "Customer feedback on features",
+      "type": "object",
+      "properties": {
+        "featureId": { "type": "string" },
+        "text": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      }
+    }
+  },
+  "firestore": {
+    "/products/{productId}": {
+      "schema": { "$ref": "#/entities/Product" },
+      "description": "Shop products"
+    },
+    "/complaints/{complaintId}": {
+      "schema": { "$ref": "#/entities/Complaint" },
+      "description": "Submitted complaints"
+    },
+    "/feedback/{feedbackId}": {
+      "schema": { "$ref": "#/entities/Feedback" },
+      "description": "Submitted feedback"
+    }
+  }
+}

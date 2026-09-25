@@ -1,0 +1,468 @@
+              ) : (
+                <div className="space-y-6">
+                  {technicianApplications.filter(app => ((app.status?.toLowerCase() === techAppTab.toLowerCase() || (techAppTab === 'Pending' && app.status?.toLowerCase() === 'pending') || (techAppTab === 'Hold' && app.status?.toLowerCase() === 'on_hold')))).map(app => (
+                    <div key={app.id} className="border border-slate-200 rounded-xl p-6 bg-slate-50 relative">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                          <h3 className="text-lg font-bold text-slate-900 mb-2">{app.fullName}</h3>
+                          <div className="space-y-2 text-sm text-slate-600">
+                            <p><span className="font-medium text-slate-800">Status:</span> 
+                                <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold uppercase ${app.status === 'Approved' ? 'bg-green-100 text-green-700' : app.status === 'Rejected' ? 'bg-red-100 text-red-700' : app.status?.toLowerCase() === 'hold' || app.status?.toLowerCase() === 'on_hold' ? 'bg-yellow-100 text-yellow-700' : 'bg-blue-100 text-blue-700'}`}>
+                                    {app.status}
+                                </span>
+                            </p>
+                            <p><span className="font-medium text-slate-800">Mobile:</span> {app.mobile}</p>
+                            <p><span className="font-medium text-slate-800">WhatsApp:</span> {app.whatsapp}</p>
+                            <p><span className="font-medium text-slate-800">City:</span> {app.city}</p>
+                            <p><span className="font-medium text-slate-800">Experience:</span> {app.experience} Years</p>
+                            <p><span className="font-medium text-slate-800">Skills:</span> {app.skills?.join(', ')}</p>
+                            <p><span className="font-medium text-slate-800">Applied On:</span> {new Date(app.createdAt).toLocaleString()}</p>
+                            {app.reason && (
+                              <p className="bg-slate-200 p-2 rounded-md mt-2"><span className="font-bold text-slate-800">Reason/Note:</span> {app.reason}</p>
+                            )}
+                          </div>
+                          
+                          <div className="mt-6 flex flex-wrap gap-3">
+                             <button onClick={() => handleOpenTechModal(app.id, 'Approved', app.whatsapp, app.fullName)} className="px-4 py-2 bg-green-600 text-white rounded-lg font-semibold text-sm hover:bg-green-700 transition-colors shadow-sm">Approve</button>
+                             <button onClick={() => handleOpenTechModal(app.id, 'Hold', app.whatsapp, app.fullName)} className="px-4 py-2 bg-yellow-500 text-white rounded-lg font-semibold text-sm hover:bg-yellow-600 transition-colors shadow-sm">Hold</button>
+                             <button onClick={() => handleOpenTechModal(app.id, 'Rejected', app.whatsapp, app.fullName)} className="px-4 py-2 bg-red-600 text-white rounded-lg font-semibold text-sm hover:bg-red-700 transition-colors shadow-sm">Reject</button>
+                          </div>
+                        </div>
+                        
+                        <div className="grid grid-cols-2 gap-4">
+                           {app.documents?.photo && (
+                             <div>
+                               <p className="text-xs font-bold text-slate-500 mb-1">Live Photo</p>
+                               {app.documents.photo.startsWith('data:application/pdf') ? (
+                                 <div className="w-full h-32 flex items-center justify-center bg-slate-200 rounded-lg border border-slate-300 text-slate-600 font-bold text-sm">PDF Document</div>
+                               ) : (
+                                 <img src={app.documents.photo} alt="Selfie" className="w-full h-32 object-cover rounded-lg border border-slate-300" />
+                               )}
+                             </div>
+                           )}
+                           {app.documents?.aadhaarFront && (
+                             <div>
+                               <p className="text-xs font-bold text-slate-500 mb-1">Aadhaar Front</p>
+                               {app.documents.aadhaarFront.startsWith('data:application/pdf') ? (
+                                 <div className="w-full h-32 flex items-center justify-center bg-slate-200 rounded-lg border border-slate-300 text-slate-600 font-bold text-sm">PDF Document</div>
+                               ) : (
+                                 <img src={app.documents.aadhaarFront} alt="Aadhaar Front" className="w-full h-32 object-cover rounded-lg border border-slate-300" />
+                               )}
+                             </div>
+                           )}
+                           {app.documents?.aadhaarBack && (
+                             <div>
+                               <p className="text-xs font-bold text-slate-500 mb-1">Aadhaar Back</p>
+                               {app.documents.aadhaarBack.startsWith('data:application/pdf') ? (
+                                 <div className="w-full h-32 flex items-center justify-center bg-slate-200 rounded-lg border border-slate-300 text-slate-600 font-bold text-sm">PDF Document</div>
+                               ) : (
+                                 <img src={app.documents.aadhaarBack} alt="Aadhaar Back" className="w-full h-32 object-cover rounded-lg border border-slate-300" />
+                               )}
+                             </div>
+                           )}
+                           {app.documents?.pan && (
+                             <div>
+                               <p className="text-xs font-bold text-slate-500 mb-1">PAN Card</p>
+                               {app.documents.pan.startsWith('data:application/pdf') ? (
+                                 <div className="w-full h-32 flex items-center justify-center bg-slate-200 rounded-lg border border-slate-300 text-slate-600 font-bold text-sm">PDF Document</div>
+                               ) : (
+                                 <img src={app.documents.pan} alt="PAN Card" className="w-full h-32 object-cover rounded-lg border border-slate-300" />
+                               )}
+                             </div>
+                           )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+            {/* Modal */}
+            {techAppModal.isOpen && (
+              <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
+                <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl animate-in zoom-in-95 duration-200 relative border border-slate-100">
+                  <h3 className="text-xl font-bold text-slate-900 mb-2">Update Application Status</h3>
+                  <p className="text-sm text-slate-500 mb-4">You are about to mark <strong>{techAppModal.name}</strong> as <span className="font-bold">{techAppModal.action}</span>.</p>
+                  
+                  <div className="mb-6">
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">Optional Reason / Note</label>
+                    <textarea
+                      value={techAppModal.reason}
+                      onChange={(e) => setTechAppModal({...techAppModal, reason: e.target.value})}
+                      rows={3}
+                      className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none resize-none"
+                      placeholder="e.g. Approved for AC repairs. Need to re-submit DL. etc."
+                    ></textarea>
+                    <p className="text-xs text-slate-400 mt-1">This will be included in the WhatsApp notification.</p>
+                  </div>
+                  
+                  <div className="flex gap-3 justify-end mt-6">
+                    <button onClick={() => setTechAppModal({ isOpen: false, appId: '', action: '', reason: '', phone: '', name: '' })} className="px-4 py-2 text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg font-bold transition-colors">Cancel</button>
+                    <button onClick={submitApplicationStatus} className="px-5 py-2 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 transition-colors shadow flex items-center gap-2">Save & Send WhatsApp</button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        ) : activeTab === 'analytics' ? (
+          <AdminAnalytics complaints={complaints} technicians={technicians} />
+        ) : activeTab === 'ai-manager' ? (
+          <AIManager complaints={complaints} inventory={inventory} />
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-1">
+              <div className="bg-white/70 backdrop-blur-xl rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/40 hover:border-blue-200/50 hover:shadow-[0_0_20px_rgba(59,130,246,0.15)] transition-all duration-300 overflow-hidden sticky top-24">
+                <div className="px-6 py-4 border-b border-slate-200 bg-slate-50">
+                  <h3 className="text-lg font-bold text-slate-900">{isEditing ? 'Edit Product' : 'Add New Product'}</h3>
+                </div>
+                <div className="p-6">
+                  <form onSubmit={handleSaveProduct} className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Product Name</label>
+                      <input type="text" required value={name} onChange={e => setName(e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-0 focus:border-blue-400 focus:shadow-[0_0_15px_rgba(59,130,246,0.3)] transition-all" placeholder="e.g. Voltas 1.5 Ton AC" />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">Category</label>
+                        <input type="text" required value={category} onChange={e => setCategory(e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-0 focus:border-blue-400 focus:shadow-[0_0_15px_rgba(59,130,246,0.3)] transition-all" placeholder="e.g. AC" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">Price (₹)</label>
+                        <input type="number" required value={price} onChange={e => setPrice(e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-0 focus:border-blue-400 focus:shadow-[0_0_15px_rgba(59,130,246,0.3)] transition-all" placeholder="e.g. 34990" />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Product Image</label>
+                      <input 
+                        type="file" 
+                        accept="image/*"
+                        required={!image} // Required if no image is already set
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onloadend = () => {
+                              setImage(reader.result as string);
+                            };
+                            reader.readAsDataURL(file);
+                          }
+                        }} 
+                        className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-0 focus:border-blue-400 focus:shadow-[0_0_15px_rgba(59,130,246,0.3)] transition-all file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" 
+                      />
+                      {image && <img src={image} alt="Preview" className="mt-2 h-20 object-cover rounded border border-slate-200" />}
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Description</label>
+                      <textarea required rows={3} value={description} onChange={e => setDescription(e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-0 focus:border-blue-400 focus:shadow-[0_0_15px_rgba(59,130,246,0.3)] transition-all resize-none" placeholder="Short description of the product"></textarea>
+                    </div>
+                    <div className="pt-4 flex gap-3">
+                      <button type="submit" className="flex-1 bg-blue-600 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-700 flex justify-center items-center gap-2">
+                        {isEditing ? <><Check className="h-4 w-4" /> Update Product</> : <><Plus className="h-4 w-4" /> Add Product</>}
+                      </button>
+                      {isEditing && (
+                        <button type="button" onClick={resetForm} className="bg-slate-200 text-slate-800 font-bold py-2 px-4 rounded-md hover:bg-slate-300">
+                          Cancel
+                        </button>
+                      )}
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+
+            <div className="lg:col-span-2">
+              <div className="bg-white/70 backdrop-blur-xl rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/40 hover:border-blue-200/50 hover:shadow-[0_0_20px_rgba(59,130,246,0.15)] transition-all duration-300 overflow-hidden">
+                <div className="px-6 py-4 border-b border-slate-200 bg-slate-50 flex justify-between items-center">
+                  <h3 className="text-lg font-bold text-slate-900">Manage Products ({products.length})</h3>
+                </div>
+                <ul className="divide-y divide-slate-200">
+                  {products.length === 0 ? (
+                    <li className="p-8 text-center text-slate-500">No products found. Add some using the form.</li>
+                  ) : (
+                    products.map(product => (
+                      <li key={product.id} className="p-4 sm:p-6 hover:bg-slate-50 transition-colors flex items-center justify-between gap-4">
+                        <div className="flex items-center gap-4 flex-1">
+                          <img src={product.image} alt={product.name} className="h-16 w-16 object-cover rounded-md border border-slate-200 shrink-0 bg-white" />
+                          <div>
+                            <h4 className="font-bold text-slate-900 text-lg">{product.name}</h4>
+                            <div className="flex items-center gap-3 text-sm text-slate-500 mt-1">
+                              <span className="bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full font-medium">{product.category}</span>
+                              <span className="font-bold text-slate-700">₹{product.price.toLocaleString('en-IN')}</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex gap-2 shrink-0">
+                          <button onClick={() => editProduct(product)} className="p-2 text-blue-600 hover:bg-blue-100 rounded-md transition-colors" title="Edit">
+                            <Edit2 className="h-5 w-5" />
+                          </button>
+                          <button onClick={() => product.id && handleDelete(product.id)} className="p-2 text-red-600 hover:bg-red-100 rounded-md transition-colors" title="Delete">
+                            <Trash2 className="h-5 w-5" />
+                          </button>
+                        </div>
+                      </li>
+                    ))
+                  )}
+                </ul>
+              </div>
+            </div>
+          </div>
+        )}
+      </main>
+
+      {resolutionModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm px-4">
+          <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-lg">
+            <h3 className="text-xl font-bold text-slate-900 mb-4">Resolve Complaint</h3>
+            <form onSubmit={handleResolveComplaint} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Select Replaced Part from Inventory</label>
+                <select 
+                  value={selectedInventoryId}
+                  onChange={e => {
+                    setSelectedInventoryId(e.target.value);
+                    if (e.target.value) {
+                      const selectedItem = inventory.find(i => i.id === e.target.value);
+                      if (selectedItem) {
+                        setTotalCost(selectedItem.sellingPrice.toString());
+                      }
+                    }
+                  }}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-0 focus:border-blue-400 focus:shadow-[0_0_15px_rgba(59,130,246,0.3)] transition-all appearance-none bg-white"
+                >
+                  <option value="">-- Manual Entry (Not from inventory) --</option>
+                  {inventory.filter(i => i.stockQuantity > 0).map(item => (
+                    <option key={item.id} value={item.id}>
+                      {item.partName} ({item.category}) - ₹{item.sellingPrice} - Stock: {item.stockQuantity}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <div className="flex justify-between items-center mb-1">
+                  <label className="block text-sm font-medium text-slate-700">
+                    {selectedInventoryId ? 'Additional Notes (Optional)' : 'Replaced Part Name & Details (Required)'}
+                  </label>
+                  <VoiceInput 
+                    isListening={isListeningPart}
+                    setIsListening={setIsListeningPart}
+                    onResult={(text) => setReplacedPartName(prev => prev ? `${prev} ${text}` : text)}
+                  />
+                </div>
+                <textarea 
+                  required={!selectedInventoryId}
+                  rows={2}
+                  maxLength={500}
+                  value={replacedPartName}
+                  onChange={e => setReplacedPartName(e.target.value)}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-0 focus:border-blue-400 focus:shadow-[0_0_15px_rgba(59,130,246,0.3)] transition-all"
+                  placeholder={selectedInventoryId ? "Any additional details..." : "e.g. Compressor, Gas Recharge..."}
+                ></textarea>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Old Part Photo</label>
+                  <div className="relative">
+                    <input 
+                      type="file" 
+                      accept="image/*"
+                      capture="environment"
+                      onChange={(e) => handleFileUpload(e, setOldPartPhoto)}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                      disabled={isUploadingPhoto}
+                    />
+                    <div className={`w-full px-3 py-2 border ${oldPartPhoto ? 'border-green-300 bg-green-50' : 'border-slate-300 bg-slate-50'} rounded-md flex items-center justify-center gap-2 text-slate-600`}>
+                      <Camera className="w-4 h-4" />
+                      <span className="text-sm font-medium">{oldPartPhoto ? 'Photo Uploaded' : 'Capture or Upload'}</span>
+                    </div>
+                  </div>
+                  {oldPartPhoto && <img src={oldPartPhoto} alt="Old part" className="mt-2 h-20 w-full object-cover rounded border border-slate-200" />}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">New Part Photo</label>
+                  <div className="relative">
+                    <input 
+                      type="file" 
+                      accept="image/*"
+                      capture="environment"
+                      onChange={(e) => handleFileUpload(e, setNewPartPhoto)}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                      disabled={isUploadingPhoto}
+                    />
+                    <div className={`w-full px-3 py-2 border ${newPartPhoto ? 'border-green-300 bg-green-50' : 'border-slate-300 bg-slate-50'} rounded-md flex items-center justify-center gap-2 text-slate-600`}>
+                      <Camera className="w-4 h-4" />
+                      <span className="text-sm font-medium">{newPartPhoto ? 'Photo Uploaded' : 'Capture or Upload'}</span>
+                    </div>
+                  </div>
+                  {newPartPhoto && <img src={newPartPhoto} alt="New part" className="mt-2 h-20 w-full object-cover rounded border border-slate-200" />}
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Serial Number / Product ID</label>
+                <input 
+                  type="text" 
+                  maxLength={50}
+                  pattern="[A-Za-z0-9\-\_]+"
+                  value={serialNumber}
+                  onChange={e => setSerialNumber(e.target.value)}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-0 focus:border-blue-400 focus:shadow-[0_0_15px_rgba(59,130,246,0.3)] transition-all"
+                  placeholder="e.g. SN-12345678"
+                />
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Warranty (Days)</label>
+                  <input 
+                    type="number" 
+                    min="0"
+                    max="1825"
+                    value={warrantyDays}
+                    onChange={e => setWarrantyDays(e.target.value)}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-0 focus:border-blue-400 focus:shadow-[0_0_15px_rgba(59,130,246,0.3)] transition-all"
+                    placeholder="e.g. 30"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Total Repair Cost (₹)</label>
+                  <input 
+                    type="number" 
+                    required
+                    min="0"
+                    max="500000"
+                    value={totalCost}
+                    onChange={e => setTotalCost(e.target.value)}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-0 focus:border-blue-400 focus:shadow-[0_0_15px_rgba(59,130,246,0.3)] transition-all"
+                    placeholder="e.g. 2500"
+                  />
+                </div>
+                <div className="col-span-2 md:col-span-1">
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Payment Status</label>
+                  <select 
+                    value={paymentStatus}
+                    onChange={e => setPaymentStatus(e.target.value as 'Paid' | 'Pending')}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-0 focus:border-blue-400 focus:shadow-[0_0_15px_rgba(59,130,246,0.3)] transition-all bg-white"
+                  >
+                    <option value="Paid">Paid</option>
+                    <option value="Pending">Payment Pending</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div className="flex gap-3 pt-4 border-t border-slate-100">
+                <button 
+                  type="button"
+                  onClick={() => setResolutionModalOpen(false)}
+                  className="flex-1 bg-slate-100 text-slate-700 font-bold py-2 px-4 rounded-md hover:bg-slate-200 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit"
+                  disabled={isUploadingPhoto}
+                  className="flex-1 bg-green-600 text-white font-bold py-2 px-4 rounded-md hover:bg-green-700 transition-colors disabled:opacity-50"
+                >
+                  {isUploadingPhoto ? 'Uploading Photo...' : 'Mark as Resolved'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {updateStatusModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm px-4">
+          <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-lg">
+            <h3 className="text-xl font-bold text-slate-900 mb-4">Update Status</h3>
+            <form onSubmit={handleUpdateCustomStatus} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Status</label>
+                <select 
+                  value={customStatus}
+                  onChange={e => setCustomStatus(e.target.value)}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-0 focus:border-blue-400 focus:shadow-[0_0_15px_rgba(59,130,246,0.3)] transition-all appearance-none bg-white"
+                >
+                  <option value="In Progress">In Progress</option>
+                  <option value="Customer Not Reachable">Customer Not Reachable / Phone Off</option>
+                  <option value="Awaiting Part">Spare Part Out of Stock / Awaiting Part</option>
+                  <option value="Scheduled">Technician On The Way / Scheduled</option>
+                  <option value="Other">Other Note</option>
+                </select>
+              </div>
+              <div>
+                <div className="flex justify-between items-center mb-1">
+                  <label className="block text-sm font-medium text-slate-700">Remarks / Note for Customer</label>
+                  <VoiceInput 
+                    isListening={isListeningNote}
+                    setIsListening={setIsListeningNote}
+                    onResult={(text) => setCustomRemark(prev => prev ? `${prev} ${text}` : text)}
+                  />
+                </div>
+                <textarea 
+                  required
+                  rows={3}
+                  value={customRemark}
+                  onChange={e => setCustomRemark(e.target.value)}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-0 focus:border-blue-400 focus:shadow-[0_0_15px_rgba(59,130,246,0.3)] transition-all"
+                  placeholder="e.g. Part 2 din me aayega..."
+                ></textarea>
+              </div>
+              
+              <div className="flex gap-3 pt-4 border-t border-slate-100">
+                <button 
+                  type="button"
+                  onClick={() => {
+                    setUpdateStatusModalOpen(false);
+                    setUpdatingComplaintId(null);
+                    setUpdatingComplaintData(null);
+                  }}
+                  className="flex-1 bg-slate-100 text-slate-700 font-bold py-2 px-4 rounded-md hover:bg-slate-200 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit"
+                  className="flex-1 bg-blue-600 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-700 transition-colors"
+                >
+                  Update
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+      {/* History Modal */}
+      {historyModalOpen && (
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl w-full max-w-lg overflow-hidden shadow-xl flex flex-col max-h-[80vh]">
+            <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+              <h3 className="text-xl font-bold text-slate-900">Service History ({historyPhone})</h3>
+              <button onClick={() => setHistoryModalOpen(false)} className="text-slate-400 hover:text-slate-600 font-bold text-xl">&times;</button>
+            </div>
+            <div className="p-6 overflow-y-auto flex-1 space-y-4">
+              {customerHistory.length === 0 ? (
+                <p className="text-center text-slate-500 py-4">No previous history found.</p>
+              ) : (
+                customerHistory.map(c => (
+                  <div key={c.id} className="border border-slate-200 rounded-lg p-4 shadow-sm bg-white">
+                    <div className="flex justify-between mb-2">
+                      <p className="font-bold text-slate-800">{c.product}</p>
+                      <p className="text-sm text-slate-500">{new Date(c.createdAt).toLocaleDateString()}</p>
+                    </div>
+                    <p className="text-sm text-slate-600 mb-2">Issue: {c.issue}</p>
+                    <p className="text-xs font-semibold mt-1">Status: <span className={c.status === 'Resolved' ? 'text-green-600' : 'text-yellow-600'}>{c.status}</span></p>
+                    {c.status === 'Resolved' && c.resolutionDetails && (
+                      <div className="mt-2 pt-2 border-t border-slate-100">
+                        <p className="text-sm text-slate-700 font-medium">Replaced: {c.resolutionDetails.replacedPartName}</p>
+                        <p className="text-sm text-slate-700 font-bold">Cost: ₹{c.resolutionDetails.totalCost}</p>
+                      </div>
+                    )}
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+    </>
+  );
+}

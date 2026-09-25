@@ -1,0 +1,12 @@
+{
+  "name": "Sachin Electricals",
+  "description": "Appliance repair and service management platform.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone",
+    "geolocation"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

@@ -1,0 +1,36 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /products/{document=**} {
+      allow read, write: if true;
+    }
+    match /complaints/{document=**} {
+      allow read, write: if true;
+    }
+    match /feedback/{document=**} {
+      allow read, write: if true;
+    }
+    match /settings/{document=**} {
+      allow read, write: if true;
+    }
+    match /inventory/{document=**} {
+      allow read, write: if true;
+    }
+    match /technicians/{document=**} {
+      allow read, write: if true;
+    }
+    match /promotions/{document=**} {
+      allow read, write: if true;
+    }
+    match /technicianApplications/{document=**} {
+      allow read, write: if true;
+    }
+    match /areaAdmins/{document=**} {
+      allow read, write: if true;
+    }
+    match /loyalty/{document=**} {
+      allow read, write: if true;
+    }
+  }
+}
