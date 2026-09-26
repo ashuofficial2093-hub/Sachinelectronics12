@@ -1,5 +1,6 @@
 import { ref, onValue, set } from 'firebase/database';
-import { rtdb } from '../lib/firebase';
+import { getDocs } from 'firebase/firestore';
+import { rtdb, productsCollection } from '../lib/firebase';
 import { ShoppingCart, X, CheckCircle2, Search, Box, Camera, ChevronLeft, ChevronRight, Sparkles, Wrench, Package, Copy, Check, MessageCircle, ExternalLink, ShieldCheck, ArrowRight } from 'lucide-react';
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -55,11 +56,13 @@ export default function Shop() {
 
   // Realtime Firebase Sync: Fetch product data live using onValue(ref(db, 'products'), snapshot => ...)
   useEffect(() => {
+    let isMounted = true;
     const db = rtdb;
     const productsRef = ref(db, 'products');
     const unsubscribe = onValue(
       productsRef,
       (snapshot) => {
+        if (!isMounted) return;
         if (snapshot.exists()) {
           const data = snapshot.val();
           const liveProducts = Object.keys(data).map((k) => ({
@@ -77,16 +80,36 @@ export default function Shop() {
         setLoading(false);
       },
       (error: any) => {
-        if (error?.message?.includes('offline')) {
-          return;
-        }
-        console.error('Error fetching live products from Firebase:', error);
-        setProducts(defaultProducts);
-        setLoading(false);
+        if (!isMounted) return;
+        console.warn('Realtime Database products sync note:', error?.message || error);
+        
+        // Fallback: try fetching from Cloud Firestore products collection
+        getDocs(productsCollection)
+          .then((snapshot) => {
+            if (!isMounted) return;
+            if (!snapshot.empty) {
+              const fsProducts = snapshot.docs.map((doc) => ({
+                id: doc.id,
+                ...doc.data(),
+              })) as Product[];
+              setProducts(fsProducts.length > 0 ? fsProducts : defaultProducts);
+            } else {
+              setProducts(defaultProducts);
+            }
+          })
+          .catch((_fsErr) => {
+            if (isMounted) setProducts(defaultProducts);
+          })
+          .finally(() => {
+            if (isMounted) setLoading(false);
+          });
       }
     );
 
-    return () => unsubscribe();
+    return () => {
+      isMounted = false;
+      unsubscribe();
+    };
   }, []);
 
   // Listen for open-product-request from Hero search or other links

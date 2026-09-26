@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sachin Electricals & Repairs</title>
+    <script>
+      // Single Page App redirect for GitHub Pages
+      // Redirects 404 paths back to the repository base URL preserving hash and query
+      var pathSegments = location.pathname.split('/').filter(Boolean);
+      // If repo name is the first segment (e.g. /Sachinelectronics12/)
+      var repoSegment = pathSegments[0] || '';
+      var redirectUrl = repoSegment ? '/' + repoSegment + '/#' + location.pathname : '/';
+      location.replace(redirectUrl);
+    </script>
+  </head>
+  <body style="font-family: sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; background: #f8fafc;">
+    <div style="text-align: center; padding: 2rem;">
+      <h2 style="color: #1e293b; margin-bottom: 0.5rem;">Sachin Electricals & Repairs</h2>
+      <p style="color: #64748b;">Redirecting to application...</p>
+    </div>
+  </body>
+</html>

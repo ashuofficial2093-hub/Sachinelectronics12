@@ -5,6 +5,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 
 import { db } from '../lib/firebase';
+import featuresBgImg from '../assets/images/features_background_1785441954792.jpg';
 
 const features = [
   {
@@ -80,7 +81,7 @@ export default function Features() {
   return (
     <section className="relative py-20 bg-white overflow-hidden">
       <div className="absolute inset-0 z-0">
-        <img src="/src/assets/images/features_background_1785441954792.jpg" alt="Background" className="w-full h-full object-cover opacity-[0.03]" />
+        <img src={featuresBgImg} alt="Background" className="w-full h-full object-cover opacity-[0.03]" />
       </div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center mb-16">

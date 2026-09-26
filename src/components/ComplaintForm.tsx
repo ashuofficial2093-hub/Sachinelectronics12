@@ -10,6 +10,7 @@ import { generateInvoice } from '../utils/generateInvoice';
 import DOMPurify from 'dompurify';
 import VoiceInput from './VoiceInput';
 import { isValidFile } from '../lib/security';
+import complaintBgImg from '../assets/images/complaint_background_1785441977801.jpg';
 
 function safeJSONParse(val: string | null, fallback: any) {
   if (!val) return fallback;
@@ -250,7 +251,7 @@ export default function ComplaintForm() {
   return (
     <section id="complaint" className="relative py-20 bg-blue-50 overflow-hidden">
       <div className="absolute inset-0 z-0">
-        <img src="/src/assets/images/complaint_background_1785441977801.jpg" alt="Background" className="w-full h-full object-cover opacity-20" />
+        <img src={complaintBgImg} alt="Background" className="w-full h-full object-cover opacity-20" />
       </div>
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         

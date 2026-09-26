@@ -1,5 +1,6 @@
 import { rtdb } from '../lib/firebase';
 import { ref, get } from 'firebase/database';
+import { getDocs } from 'firebase/firestore';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { db, promotionsCollection } from '../lib/firebase';
@@ -12,9 +13,9 @@ export default function HeroCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
+    let isMounted = true;
     const fetchPromotions = async () => {
       try {
-        
         const snapshot = await get(ref(rtdb, 'promotions'));
         let activePromos: Promotion[] = [];
         if (snapshot.exists()) {
@@ -22,17 +23,24 @@ export default function HeroCarousel() {
           activePromos = Object.keys(data).map(k => ({ id: k, ...data[k] })).filter(p => p.isActive) as Promotion[];
           activePromos.sort((a, b) => a.order - b.order);
         }
-        setPromotions(activePromos);
-
+        if (isMounted) setPromotions(activePromos);
       } catch (error: any) {
-        if (error?.message?.includes('offline')) {
-          return;
+        console.warn('RTDB promotions sync notice:', error?.message || error);
+        try {
+          const fsSnap = await getDocs(promotionsCollection);
+          if (!fsSnap.empty && isMounted) {
+            const activePromos = fsSnap.docs.map(d => ({ id: d.id, ...d.data() })).filter((p: any) => p.isActive) as Promotion[];
+            activePromos.sort((a, b) => a.order - b.order);
+            setPromotions(activePromos);
+          }
+        } catch (_fsErr) {
+          // ignore fallback error
         }
-        console.error('Error fetching promotions:', error);
       }
     };
     
     fetchPromotions();
+    return () => { isMounted = false; };
   }, []);
 
   useEffect(() => {
